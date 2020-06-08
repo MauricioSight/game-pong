@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamer Pong</title>
+    <style>
+        body {
+            background-color: blanchedalmond;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .titulo {
+            font-size: 1.3em;
+            height: 35px;
+            text-align: center;
+        }
+
+        .background {
+            padding: 2px;
+            width: 800px;
+            height: 500px;
+            background-color: black;
+            box-shadow: gray 5px 5px 5px 0px;
+            text-align: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-areas: 'player1 placar player2';
+            align-items: stretch;
+        }
+
+        .background2 {
+            position: absolute;
+            padding: 2px;
+            width: 800px;
+            height: 500px;
+            top: 70px;
+        }
+
+        .placar {
+            position: relative;
+            margin: 0;
+            align-items: center;
+        }
+
+        .titulo_placar {
+            font-weight: bold;
+            color: cornsilk;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .pontuacao {
+            margin: 0;
+            padding-left: 10px;
+            padding-right: 10px;
+            display: inline-block;
+            color: cornsilk;
+        }
+
+        .game_status {
+            position: relative;
+            top: 120px;
+            margin: 0;
+            color: cornsilk;
+            font-size: 3em;
+            width: 400px;
+        }
+
+        .bola {
+            background-color: white;
+            display: inline-block;
+            position: relative;
+            height: 20px;
+            width: 20px;
+        }
+
+        .grid_player1 {
+            grid-area: player1;
+        }
+
+        .grid_player2 {
+            grid-area: player2;
+        }
+
+        .player {
+            position: relative;
+            border: 0;
+            height: 100px;
+            width: 15px;
+            background-color: white;
+        }
+
+        #player2 {
+            float: right;
+            border-right: black 5px solid;
+            top: 0%;
+            grid-area: player2;
+        }
+
+        #player1 {
+            float: left;
+            border-left: black 5px solid;
+            top: 0%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="titulo">GAMER PONG</h1>
+    <div class="background">
+
+        <div class="placar">
+            <h1 class="titulo_placar">PONTUAÇÃO</h1>
+            <h1 class="pontuacao" id="ponto_player1"></h1>
+            <h1 class="pontuacao" id="ponto_player2"></h1>
+            <h1 class="game_status"></h1>
+        </div>
+
+        <div class="grid_player1">
+            <div class="player" id="player1"></div>
+        </div>
+
+        <div class="grid_player2">
+            <div class="player" id="player2"></div>
+        </div>
+    </div>
+    <div class="background2">
+        <div class="bola"></div>
+    </div>
+</body>
+
+<script>
+    //Autor: Maurício Sightman 23/04/2020
+    //Tag HTML atribuida a variáveis 
+    const player1_d = document.querySelector('#player1')
+    const player1_pontos = document.querySelector('#ponto_player1')
+    const player2_d = document.querySelector('#player2')
+    const player2_pontos = document.querySelector('#ponto_player2')
+    const bola_d = document.querySelector('.bola')
+    const game_status = document.querySelector('.game_status')
+
+    console.log(player1_d.clientHeight)
+
+    // Objeto Jogador da direita
+    const player1 = {
+        tag: player1_d,
+        pontuacao_tag: player1_pontos,
+        pontuacao: 0,
+        posicao_y: 200,
+        velocidade: 20,
+        atualizar() {
+            this.tag.style.top = this.posicao_y + 'px'
+        },
+        mover() {
+            if (83 in teclas) {
+                this.posicao_y += this.velocidade
+                if (this.posicao_y > 400) {
+                    this.posicao_y = 400
+                }
+                this.atualizar()
+            } else if (87 in teclas) {
+                this.posicao_y -= this.velocidade
+                if (this.posicao_y < 0) {
+                    this.posicao_y = 0
+                }
+                this.atualizar()
+            }
+        }
+    }
+    // Objeto Jogador da esquerda
+    const player2 = {
+        tag: player2_d,
+        pontuacao: 0,
+        pontuacao_tag: player2_pontos,
+        posicao_y: 200,
+        velocidade: 20,
+        atualizar() {
+            this.tag.style.top = this.posicao_y + 'px'
+        },
+        mover() {
+            if (40 in teclas) {
+                this.posicao_y += this.velocidade
+                if (this.posicao_y > 400) {
+                    this.posicao_y = 400
+                }
+                this.atualizar()
+            } else if (38 in teclas) {
+                this.posicao_y -= this.velocidade
+                if (this.posicao_y < 0) {
+                    this.posicao_y = 0
+                }
+                this.atualizar()
+            }
+        },
+    }
+    // Objeto da bola
+    const bola = {
+        tag: bola_d,
+        centro_x: 400 - 10,
+        centro_y: 250 - 10,
+        x: 400 - 10,
+        y: 250 - 10,
+        vx: 5,
+        vy: 5,
+        atualizar() {
+            this.tag.style.top = this.y + 'px'
+            this.tag.style.left = this.x + 'px'
+        },
+        mover() {
+            if (this.y >= (500 - 20)) {
+                this.vy = -this.vy
+            }
+            if (this.y <= 0) {
+                this.vy = -this.vy
+            }
+            this.x += this.vx
+            this.y += this.vy
+            this.atualizar()
+        },
+        mover_centro() {
+            this.x = this.centro_x
+            this.y = this.centro_y
+            this.atualizar()
+            atualizar_placar()
+        }
+    }
+
+    function atualizar_placar() {
+        player1.pontuacao_tag.innerHTML = player1.pontuacao
+        player2.pontuacao_tag.innerHTML = player2.pontuacao
+    }
+
+    function gameover() {
+        if (player1.pontuacao == 10 || player2.pontuacao == 10) {
+            clearInterval(temporizador)
+            bola.tag.style.display = 'none'
+            game_status.innerHTML = 'GAME OVER'
+            player1.posicao_y = 200
+            player2.posicao_y = 200
+            player1.atualizar()
+            player2.atualizar()
+        }
+    }
+
+    function colisao() {
+        if (bola.x <= 20) {
+            if (((bola.y + 20) > player1.posicao_y) && (bola.y < (player1.posicao_y + 100))) {
+                bola.vx = -bola.vx
+            } else {
+                player2.pontuacao++
+                bola.mover_centro()
+            }
+        }
+        if (bola.x >= 770) {
+            if (((bola.y + 20) > player2.posicao_y) && (bola.y < (player2.posicao_y + 100))) {
+                bola.vx = -bola.vx
+            } else {
+                player1.pontuacao++
+                bola.mover_centro()
+            }
+        }
+    }
+
+    function game() {
+        player1.mover()
+        player2.mover()
+        bola.mover()
+        colisao()
+        gameover()
+    }
+    function setup() {
+        game_status.innerHTML = 'PRESS ANY KEY TO START'
+        atualizar_placar()
+        bola.tag.style.display = 'none'
+        player1.atualizar()
+        player2.atualizar()
+    }
+    function start() {
+        primeira_vez = false
+        game_status.innerHTML = ''
+        game_status.style.top = '150px'
+        bola.tag.style.display = 'inline-block'
+        bola.mover_centro()
+        temporizador = setInterval(game, 20)
+    }
+
+    let primeira_vez = true
+    let temporizador
+    setup()
+
+    // 87 - subir - 38
+    // 83 - descer - 40
+    let teclas = []
+    document.addEventListener('keydown', (e) => {
+        teclas[e.keyCode] = true
+        if (primeira_vez) { start() }
+    })
+    document.addEventListener('keyup', (e) => delete teclas[e.keyCode])
+</script>
+
+</html>
